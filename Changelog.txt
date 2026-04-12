@@ -1,0 +1,4 @@
+[Changelog v0.1.0]
+:new: **New Features**
+*	GEN - initial release
+*	GEN - shows a hint / warning if an operator not listed in the north apron list is not set up for the southern runway
