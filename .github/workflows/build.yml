@@ -185,16 +185,31 @@ jobs:
         fi
     
     - name: Create GitHub Release and Upload Assets
-      id: create_release
-      uses: softprops/action-gh-release@v2
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.releasename.outputs.releasename }}
-        body_path: release_body.txt
-        name: ${{ steps.releasename.outputs.releasename }}
-        target_commitish: ${{ github.sha }}
-        draft: false
-        prerelease: ${{steps.prerelease.outputs.prerelease}}
-        files: |
-          output/plugin.zip
+      run: |
+        TAG_NAME="${{ steps.releasename.outputs.releasename }}"
+        IS_PRERELEASE="${{ steps.prerelease.outputs.prerelease }}"
+        
+        # set prerelease
+        if [[ "$IS_PRERELEASE" == "true" ]]; then
+          PRERELEASE_FLAG="--prerelease"
+        else
+          PRERELEASE_FLAG=""
+        fi
+        
+        # check if changelog.txt exists (if mismatching versions are present above)
+        if [ -f "release_body.txt" ]; then
+          NOTES_FLAG="--notes-file release_body.txt"
+        else
+          NOTES_FLAG="--notes 'Automated build for $TAG_NAME'"
+        fi
+        
+        # create release and upload zip
+        echo "Creating release $TAG_NAME..."
+        gh release create "$TAG_NAME" output/plugin.zip \
+          --title "$TAG_NAME" \
+          --target "${{ github.sha }}" \
+          $NOTES_FLAG \
+          $PRERELEASE_FLAG
