@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.15)
+
+project(eddft3Plugin VERSION "1.0.0" LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_policy(SET CMP0091 NEW)
+cmake_policy(SET CMP0156 NEW)
+
+# ensure 32-bit (Win32) build (ES limitation)
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+    message(FATAL_ERROR "Plugin must be built as 32-bit. Configure with -A Win32.")
+endif()
+
+# force static CRT for entire project
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
+endif()
+
+# directory for additional linkage
+link_directories(${CMAKE_SOURCE_DIR}/include/es)
+
+# directory where headers are stored
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# ANGEPASST: Nur noch die Dateien deines minimalen Plugins
+# Füge hier weitere .cpp Dateien hinzu, wenn dein Projekt wächst!
+set(SOURCES 
+    eddft3Plugin.cpp
+)
+
+# DLL target (ANGEPASST: Name des Targets)
+add_library(eddft3 SHARED ${SOURCES})
+
+if(MSVC)
+    # create debug info - /Oy prevents frame pointer omission (for debugging)
+    target_compile_options(eddft3 PRIVATE /Zi "$<$<CONFIG:Release>:/Oy->")
+
+    # created PDB - /MAP maps function offsets
+    target_link_options(eddft3 PRIVATE /DEBUG:FULL /OPT:REF /OPT:ICF "$<$<CONFIG:Release>:/MAP>")
+endif()
+
+target_link_libraries(eddft3
+    PRIVATE
+        EuroScopePlugInDLL.lib
+)
