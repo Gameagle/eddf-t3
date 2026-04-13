@@ -22,10 +22,10 @@ link_directories(${CMAKE_SOURCE_DIR}/include/es)
 # directory where headers are stored
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# ANGEPASST: Nur noch die Dateien deines minimalen Plugins
-# Füge hier weitere .cpp Dateien hinzu, wenn dein Projekt wächst!
 set(SOURCES 
     eddft3Plugin.cpp
+    logger.cpp
+    pch.cpp
 )
 
 # DLL target (ANGEPASST: Name des Targets)
