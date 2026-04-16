@@ -1,6 +1,8 @@
 #pragma once
+
 #include "include/es/EuroScopePlugIn.h"
 #include <string>
+#include <string_view>
 #include <set>
 
 namespace eddft3
@@ -10,16 +12,48 @@ namespace eddft3
 	const std::string pluginAuthor = "Gameagle";
 	const std::string pluginCopyright = "GPL v3";
 
+	struct color {
+		int r, g, b;
+	};
+
 	class eddft3Plugin : public EuroScopePlugIn::CPlugIn
 	{
 	public:
 		eddft3Plugin();
 		virtual ~eddft3Plugin();
 
+	private:
 		std::set<std::string> northOps{ "AEE","AUA","DLH","CTN","UAL","LOT","SWR",
 			"TAP","ITY","LHX","CLH","BTI","AAR","ACA","ANA","TAM","THA","AIC",
 			"CCA","CFG","ETH","MSR","EWG","THY","TKJ","SIA","SXS","OCN","BCS",
 			"DHX","BOX","FDX","TAY","GEC","DLA","LH" };
+
+		EuroScopePlugIn::CPosition eddfPosition;
+		color colorOk;
+		color colorWarn;
+		color colorCaution;
+
+		//************************************
+		// Description: Retrieves the position of EDDF from the sector file
+		// Method:    getEddfPosition
+		// FullName:  eddft3::eddft3Plugin::getEddfPosition
+		// Access:    private 
+		// Returns:   EuroScopePlugIn::CPosition
+		// Qualifier:
+		//************************************
+		EuroScopePlugIn::CPosition getEddfPosition();
+
+		//************************************
+		// Description: Retrieves the color for warnings from the plugin settings, or defaults if not set
+		// Method:    getColorFromSettings
+		// FullName:  eddft3::eddft3Plugin::getColorFromSettings
+		// Access:    private 
+		// Returns:   eddft3::color
+		// Qualifier:
+		//************************************
+		color getColorFromSettings(const std::string_view& colorType);
+
+		bool isSouthApp(const std::string_view& last);
 
 		//************************************
 			// Description: Handles events on tag item updates
@@ -38,5 +72,16 @@ namespace eddft3
 			// Parameter: double * pFontSize
 			//************************************
 		void OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlugIn::CRadarTarget RadarTarget, int ItemCode, int TagData, char sItemString[16], int* pColorCode, COLORREF* pRGB, double* pFontSize);
+
+		//************************************
+		// Description: Handles custom commands for the plugin, such as toggling logging or setting RGB values
+		// Method:    OnCompileCommand
+		// FullName:  eddft3::eddft3Plugin::OnCompileCommand
+		// Access:    private 
+		// Returns:   bool
+		// Qualifier:
+		// Parameter: const char * sCommandLine
+		//************************************
+		bool OnCompileCommand(const char* sCommandLine);
 	};
 }

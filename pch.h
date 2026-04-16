@@ -8,7 +8,12 @@
 #define PCH_H
 
 // Fügen Sie hier Header hinzu, die vorkompiliert werden sollen.
-#include "framework.h"
+#define WIN32_LEAN_AND_MEAN             // Selten verwendete Teile der Windows-Header ausschließen
+#include <windows.h>
+
+#pragma comment(lib, "user32.lib")
+
+#include "include/es/EuroScopePlugIn.h"
 #include "constants.h"
 
 #endif //PCH_H

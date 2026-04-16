@@ -1,0 +1,7 @@
+[Changelog v0.1.0]
+:new: **New Features**
+*	GEN - initial release
+*	GEN - shows a hint / warning if an operator not listed in the north apron list is not set up for the southern runway
+*	LOG - console opens automatically on plugin load
+*	CMD ".dft3 log" can be used to toggle the console
+*	CMD ".dft3 rgb XXX:YYY:ZZZ" can be used to set the RGB color for the hint
