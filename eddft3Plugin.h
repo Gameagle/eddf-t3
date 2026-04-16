@@ -1,6 +1,8 @@
 #pragma once
 
+#include "include/es/EuroScopePlugIn.h"
 #include <string>
+#include <string_view>
 #include <set>
 
 namespace eddft3
@@ -27,7 +29,9 @@ namespace eddft3
 			"DHX","BOX","FDX","TAY","GEC","DLA","LH" };
 
 		EuroScopePlugIn::CPosition eddfPosition;
-		color warnColor{ 255, 0, 0 };
+		color colorOk;
+		color colorWarn;
+		color colorCaution;
 
 		//************************************
 		// Description: Retrieves the position of EDDF from the sector file
@@ -47,7 +51,9 @@ namespace eddft3
 		// Returns:   eddft3::color
 		// Qualifier:
 		//************************************
-		color getColorFromSettings();
+		color getColorFromSettings(const std::string_view& colorType);
+
+		bool isSouthApp(const std::string_view& last);
 
 		//************************************
 			// Description: Handles events on tag item updates
