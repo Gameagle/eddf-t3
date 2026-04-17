@@ -117,7 +117,7 @@ eddft3::color eddft3::eddft3Plugin::getColorFromSettings(const std::string_view&
 
 bool eddft3::eddft3Plugin::isSouthApp(const std::string_view& last)
 {
-	static const std::regex starPattern(R"([CD](?=/|$))");
+	static const std::regex starPattern(R"([BC](?=/|$))");
 
 	bool starMatch = std::regex_match(last.begin(), last.end(), starPattern);
 
