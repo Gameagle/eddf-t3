@@ -8,7 +8,7 @@
 namespace eddft3
 {
 	const std::string pluginName = "eddft3";
-	const std::string pluginVersion = "0.1.0";
+	const std::string pluginVersion = "0.1.1";
 	const std::string pluginAuthor = "Gameagle";
 	const std::string pluginCopyright = "GPL v3";
 
