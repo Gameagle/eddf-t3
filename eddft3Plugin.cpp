@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "eddft3Plugin.h"
-#include "logger.h"
 
 #include <regex>
 #include <ranges>
@@ -14,6 +13,7 @@ eddft3::eddft3Plugin::eddft3Plugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn:
 	eddft3::pluginCopyright.c_str())
 {
 	RegisterTagItemType("RWY Hint", TAG_ITEM_DFT3_HINT);
+	RegisterTagItemFunction("RWY Hint Acknowledge", TAG_FUNC_DFT3_HINT_ACK);
 	DisplayUserMessage("Message", "eddft3", std::string("Version: " + pluginVersion + " loaded.").c_str(), true, true, true, false, false);
 
 	eddfPosition = getEddfPosition();
@@ -117,11 +117,30 @@ eddft3::color eddft3::eddft3Plugin::getColorFromSettings(const std::string_view&
 
 bool eddft3::eddft3Plugin::isSouthApp(const std::string_view& last)
 {
-	static const std::regex starPattern(R"([BC](?=/|$))");
+	std::string_view ownFac(ControllerMyself().GetCallsign());
+	// static const std::regex starPattern(R"([BC](?=/|$))");
+	// bool starMatch = std::regex_match(last.begin(), last.end(), starPattern);
 
-	bool starMatch = std::regex_match(last.begin(), last.end(), starPattern);
+	if (ownFac.ends_with("APP"))
+	{
+		eddft3::Logger::log("[APP] Checking last part (should contain rwy): " + std::string(last));
+		return last.ends_with("25L") || last.ends_with("07R");
+	}
+	if (ownFac.ends_with("CTR"))
+	{
+		size_t slashPos = last.find('/');
+		std::string_view star = last.substr(0, slashPos);
 
-	return last.ends_with("25L") || last.ends_with("07R")/* || starMatch*/;
+		if (!this->activeAppAtc.empty())
+		{
+			eddft3::Logger::log("[CTR] Active APP controllers: " + std::to_string(this->activeAppAtc.size()) + ". Checking STAR: " + std::string(star));
+			return star.ends_with('B') || star.ends_with('C');
+		}
+		eddft3::Logger::log("[CTR] No active APP controllers found. Checking last part: " + std::string(last));
+		return (star.ends_with('B') || star.ends_with('C')) && (last.ends_with("25L") || last.ends_with("07R")); // top-down
+	}
+	
+	return false; // default - fallback
 }
 
 void eddft3::eddft3Plugin::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlugIn::CRadarTarget RadarTarget, int ItemCode, int TagData, char sItemString[16], int* pColorCode, COLORREF* pRGB, double* pFontSize)
@@ -138,8 +157,8 @@ void eddft3::eddft3Plugin::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan,
 		{
 			std::string callsign(FlightPlan.GetCallsign());
 
-			// skip operator landing in the north
-			if (northOps.find(callsign.substr(0, 3)) == northOps.end())
+			// check only operators landing in the south
+			if (southOps.find(callsign.substr(0, 3)) != southOps.end())
 			{
 				std::string_view route = FlightPlan.GetFlightPlanData().GetRoute();
 
@@ -158,9 +177,8 @@ void eddft3::eddft3Plugin::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan,
 				std::string_view lastRoutePart = (lastSpacePos == std::string_view::npos) ? route : route.substr(lastSpacePos + 1);
 
 				if (!isSouthApp(std::string(lastRoutePart.begin(), lastRoutePart.end())))
-				{
-					
-					*pRGB = RGB(colorCaution.r, colorCaution.g, colorCaution.b);
+				{	
+					ackFpln.contains(callsign) ? *pRGB = RGB(colorWarn.r, colorWarn.g, colorWarn.b) : *pRGB = RGB(colorCaution.r, colorCaution.g, colorCaution.b);
 					strcpy_s(sItemString, 16, "S");
 				}
 				else
@@ -170,6 +188,22 @@ void eddft3::eddft3Plugin::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan,
 				}
 			}
 		}
+	}
+}
+
+void eddft3::eddft3Plugin::OnFunctionCall(int FunctionId, const char* sItemString, POINT Pt, RECT Area)
+{
+	if (FunctionId == eddft3::TAG_FUNC_DFT3_HINT_ACK)
+	{
+		EuroScopePlugIn::CFlightPlan aselFP = this->FlightPlanSelectASEL();
+		if (!aselFP.IsValid())
+		{
+			eddft3::Logger::log("No valid flight plan selected for acknowledgment.");
+			return;
+		}
+		
+		eddft3::Logger::log("Acknowledging hint for flight: " + std::string(aselFP.GetCallsign()));
+		this->ackFpln.emplace(aselFP.GetCallsign());
 	}
 }
 
@@ -196,7 +230,8 @@ bool eddft3::eddft3Plugin::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
-		else if(std::find(parameters.begin(), parameters.end(), "rgb") != parameters.end())
+
+		if(std::find(parameters.begin(), parameters.end(), "rgb") != parameters.end())
 		{
 			if(parameters.size() < 3)
 			{
@@ -268,15 +303,35 @@ bool eddft3::eddft3Plugin::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
-		else
+		
+		if (std::find(parameters.begin(), parameters.end(), "reset") != parameters.end())
 		{
-			DisplayUserMessage("eddft3", "eddft3", ("Unkown command: " + command).c_str(), true, true, true, true, false);
-			eddft3::Logger::log("Unknown command parameter. Command was: " + command);
+			this->activeAppAtc.clear();
+			DisplayUserMessage("eddft3", "eddft3", "Active app ATC list cleared via command.", true, true, true, true, false);
+			eddft3::Logger::log("Active app ATC list cleared via command.");
+			this->ackFpln.clear();
+			DisplayUserMessage("eddft3", "eddft3", "Acknowledged flight plans cleared via command.", true, true, true, true, false);
+			eddft3::Logger::log("Acknowledged flight plans cleared via command.");
+
 			return true;
 		}
+		
+		DisplayUserMessage("eddft3", "eddft3", ("Unkown command: " + command).c_str(), true, true, true, true, false);
+		eddft3::Logger::log("Unknown command parameter. Command was: " + command);
+		return true;
 	}
 
 	return false;
+}
+
+void eddft3::eddft3Plugin::OnControllerPositionUpdate(EuroScopePlugIn::CController Controller)
+{
+	if (!Controller.IsValid() || !Controller.IsController()) return;
+	if (Controller.GetPrimaryFrequency() == 199.998 || Controller.GetCallsign() == ControllerMyself().GetCallsign()) return;
+
+	std::string_view callsign(Controller.GetCallsign());
+
+	if (callsign.starts_with("EDDF") && callsign.ends_with("APP")) this->activeAppAtc.emplace(callsign);
 }
 
 eddft3::eddft3Plugin* pEddft3Plugin = nullptr;
