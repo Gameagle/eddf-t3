@@ -1,3 +1,15 @@
+[Changelog v0.2.0]
+:new: **New Features**
+*	GEN - CTR and APP are distinguished
+	*	APP atc for EDDF is stored (facility APP only, no DEP). Storage by callsign and removal upon disconnection.
+	*	if the own facility is APP (last part of callsign matters) only the RWY is checked
+	*	if the own facility is CTR (see above) only the STAR (B / C) is checked if a EDDF_*_APP is online. If no APP is online STAR **AND** RWY (southern) are both checked.
+*	GEN - new function ("Acknowledge") implemented to accept "wrong" STAR and/or RWY. Stored acknowledgment is reset on flight plan data updates (e.g. rwy changes) and for RadarTargets below 50kts
+
+:gear: **Changed Features / Behaviour**
+*	GEN - warn color activated for acknowledge flight plans (with "wrong" STAR and/or RWY)
+*	GEN - changed callsign lookup. Now only operators based on the new Terminal 3 will be prompted for the southern approach
+
 [Changelog v0.1.1]
 :lady_beetle: **Fixes**
 *	GEN - fixed accidental usage of CD-Arrivals instead of BC-Arrivals
