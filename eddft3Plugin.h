@@ -10,7 +10,7 @@
 namespace eddft3
 {
 	const std::string pluginName = "eddft3";
-	const std::string pluginVersion = "0.2.0";
+	const std::string pluginVersion = "0.2.1";
 	const std::string pluginAuthor = "Gameagle";
 	const std::string pluginCopyright = "GPL v3";
 
@@ -29,7 +29,17 @@ namespace eddft3
 			"DAH", "DAL", "EIN", "ETD", "FHY", "GFA", "HVN", "HYM", "HYS", "JAL", "KAC", "KAL",
 			"KZR", "LBT", "MEA", "MFX", "MGL", "MNE", "MSC", "NMA", "OMA", "PGT", "PUE", "QNT",
 			"QTR", "RAM", "RJA", "SEU", "SVA", "TUA", "TWB", "UAE", "UBD", "AEA", "AFR", "ANE",
-			"BUC", "EJU", "FIN", "IBE", "ICE", "KLM", "ROT", "RZO", "SAS", "SEH", "TUI" };
+			"BUC", "EJU", "FIN", "IBE", "ICE", "KLM", "ROT", "RZO", "SAS", "SEH", "TUI", "CAO",
+			"NCA", "LCO", "CSS", "CSC", "TAR", "LZB"};
+
+		std::set<std::string> acftAllRwys{ "B703","B712","B721","B722","B731","B732","B733","B734",
+			"B734","B735","B736","B737","B738","B739","B37M","B38M","B39M","B3XM","B752","B753",
+			"B762","B763","B764","B772","B77L","B773","B77W","B779","B788","B789","B78X","A306",
+			"A30B","A310","A318","A319","A320","A321","A32A","A32B","A32C","A32D","A19N","A20N",
+			"A21N","A332","A333","A337","A338","A339","A342","A343","A345","A346","A359","A35K",
+			"AT43","AT45","AT46","AT72","AT73","AT75","AT76","BCS1","BCS3","CRJ7","CRJ9","CRJX",
+			"DH8C","DH8D","E170","E175","E75L","E75S","E190","E195","E290","E295","F70","F100",
+			"MD81","MD82","MD83","MD87","MD88","MD90","RJ1H","RJ70","RJ85","B461","B462","B563" };
 
 		EuroScopePlugIn::CPosition eddfPosition;
 		color colorOk;
