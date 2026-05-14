@@ -1,10 +1,19 @@
 [Changelog v0.2.0]
 :new: **New Features**
+*	GEN - Added acft types that are able to use all arr rwys (north/south). Any acft not in that list will be considered for the southern rwy (e.g. MD11 is not allowed to use northern rwy)
+*	GEN - TWR logons will now also see the hint and if it is set correctly (if the item is configured via the tag editor)
+
+:gear: **Changed Features / Behaviour**
+*	GEN - Added operators considered for the southern rwy
+
+[Changelog v0.2.0]
+:new: **New Features**
 *	GEN - CTR and APP are distinguished
 	*	APP atc for EDDF is stored (facility APP only, no DEP). Storage by callsign and removal upon disconnection.
 	*	if the own facility is APP (last part of callsign matters) only the RWY is checked
 	*	if the own facility is CTR (see above) only the STAR (B / C) is checked if a EDDF_*_APP is online. If no APP is online STAR **AND** RWY (southern) are both checked.
 *	GEN - new function ("Acknowledge") implemented to accept "wrong" STAR and/or RWY. Stored acknowledgment is reset on flight plan data updates (e.g. rwy changes) and for RadarTargets below 50kts
+*	CMD - ".dft3 reset" resets the internal lists (active APP ATC and acknowledged "wrong" STAR and/or RWY)
 
 :gear: **Changed Features / Behaviour**
 *	GEN - warn color activated for acknowledge flight plans (with "wrong" STAR and/or RWY)
