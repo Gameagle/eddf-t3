@@ -121,9 +121,9 @@ bool eddft3::eddft3Plugin::isSouthApp(const std::string_view& last)
 	// static const std::regex starPattern(R"([BC](?=/|$))");
 	// bool starMatch = std::regex_match(last.begin(), last.end(), starPattern);
 
-	if (ownFac.ends_with("APP"))
+	if (ownFac.ends_with("APP") || ownFac.ends_with("TWR")) // #note: consider extracting TWR
 	{
-		eddft3::Logger::log("[APP] Checking last part (should contain rwy): " + std::string(last));
+		eddft3::Logger::log("[APP/TWR] Checking last part (should contain rwy): " + std::string(last));
 		return last.ends_with("25L") || last.ends_with("07R");
 	}
 	if (ownFac.ends_with("CTR"))
@@ -156,9 +156,10 @@ void eddft3::eddft3Plugin::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan,
 		if (FlightPlan.GetFlightPlanData().GetDestination() == std::string("EDDF") /*&& distance <= 80.0*/)
 		{
 			std::string callsign(FlightPlan.GetCallsign());
+			std::string acftType(FlightPlan.GetFlightPlanData().GetAircraftFPType());
 
 			// check only operators landing in the south
-			if (southOps.find(callsign.substr(0, 3)) != southOps.end())
+			if (southOps.find(callsign.substr(0, 3)) != southOps.end() || acftAllRwys.find(acftType) == acftAllRwys.end())
 			{
 				std::string_view route = FlightPlan.GetFlightPlanData().GetRoute();
 
