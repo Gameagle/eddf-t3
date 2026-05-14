@@ -1,4 +1,4 @@
-[Changelog v0.2.0]
+[Changelog v0.2.1]
 :new: **New Features**
 *	GEN - Added acft types that are able to use all arr rwys (north/south). Any acft not in that list will be considered for the southern rwy (e.g. MD11 is not allowed to use northern rwy)
 *	GEN - TWR logons will now also see the hint and if it is set correctly (if the item is configured via the tag editor)
