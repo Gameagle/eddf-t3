@@ -10,7 +10,7 @@
 namespace eddft3
 {
 	const std::string pluginName = "eddft3";
-	const std::string pluginVersion = "0.2.1";
+	const std::string pluginVersion = "0.2.2";
 	const std::string pluginAuthor = "Gameagle";
 	const std::string pluginCopyright = "GPL v3";
 
@@ -29,8 +29,8 @@ namespace eddft3
 			"DAH", "DAL", "EIN", "ETD", "FHY", "GFA", "HVN", "HYM", "HYS", "JAL", "KAC", "KAL",
 			"KZR", "LBT", "MEA", "MFX", "MGL", "MNE", "MSC", "NMA", "OMA", "PGT", "PUE", "QNT",
 			"QTR", "RAM", "RJA", "SEU", "SVA", "TUA", "TWB", "UAE", "UBD", "AEA", "AFR", "ANE",
-			"BUC", "EJU", "FIN", "IBE", "ICE", "KLM", "ROT", "RZO", "SAS", "SEH", "TUI", "CAO",
-			"NCA", "LCO", "CSS", "CSC", "TAR", "LZB"};
+			"BUC", "EJU", "FIN", "IBE", "ICE", "KLM", "ROT", "RZO", "SAS", "SEH", "STR", "TUI",
+			"CAO", "NCA", "LCO", "CSS", "CSC", "TAR", "LZB"};
 
 		std::set<std::string> acftAllRwys{ "B703","B712","B721","B722","B731","B732","B733","B734",
 			"B734","B735","B736","B737","B738","B739","B37M","B38M","B39M","B3XM","B752","B753",
