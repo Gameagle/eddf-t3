@@ -26,7 +26,7 @@ void eddft3::Logger::initialize()
 		{
 			DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
 		}
-		SetWindowTextA(hwnd, "eddft3 Logger");
+		SetWindowTextA(hwnd, "Console Logger");
 	}
 
 	freopen_s(&consoleOut, "CONOUT$", "w", stdout);
